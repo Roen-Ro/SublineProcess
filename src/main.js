@@ -24,36 +24,81 @@ function parseSrtFromFile(path) {
         resolve(srtString);
       }
     });
-   
   });
   
 }
 
 console.log('inputed parameters are: '+ inputPara);
-var srtPath = '/Users/lolaage/Desktop/subtitles/InTheHeartOfTheSun/ChineseSimplified-test.srt';//inputPara[2];
+var srtPath = '/Users/lolaage/Desktop/MyProj/SublineProcess/res/InTheHeartOfTheSun/ChineseSimplified-test.srt';//inputPara[2];
 
 const rl = readline.createInterface({
   input: fs.createReadStream(srtPath) //直接读取文件流，有可能会遇到编码问题，所以input要为解码后的字符
 });
 
-var isLastBlankLine = true;
+//var isLastBlankLine = true;
+var lines = new Array()
+var lastLineType = 'b'
+var currentLineType = 'b';//b=blank,i=index,t=time,c=content,n=unknown
+var lastContent;
+var index;
+var srtLine = null;
 rl.on('line', (line) => {
-
- 
-  if(isLastBlankLine){
-    console.log('----------------------');
+  
+  let len = line.trim().length;
+  if(len == 0){
+    currentLineType = 'b';
+    var tLine = srtLine;
+    addLine(tLine);
+    srtLine = null;
+  }
+  else if(lastLineType == 'b') {
+    index = parseInt(line);
+    if(index > 0){
+      srtLine = {};//create new line
+      srtLine.idx = index;
+      currentLineType = 'i';
+    }
+    else
+      currentLineType = 'n';
+  }
+  else if(lastLineType == 'i') {
+    //(\d{2}:\d{2}:\d{2},\d{3}) --> (\d{2}:\d{2}:\d{2},\d{3})
+    var times = line.split(' --> ');
+    currentLineType = 't';
+    srtLine.start = times[0];
+    srtLine.end = times[1];
+  }
+  else if(lastLineType == 't') {
+   // console.log(`${line}`);
+    currentLineType = 'c';
+    srtLine.content = line;
+  }
+  else if(lastLineType == 'c') {
+    srtLine.content = srtLine.content + ' ' + line;
   }
 
-  console.log(`${line}`);
+  lastLineType = currentLineType;
 
-  let len = line.trim().length;
-  if(len == 0)
-    isLastBlankLine = true;
-  else
-    isLastBlankLine = false;
-   
 });
 
+
+
+if(srtLine)
+  addLine(srtLine);
+
+function addLine(srtLine) {
+  if(srtLine){
+    lines.push(srtLine);
+    console.log('push '+ JSON.stringify(srtLine));
+  }
+    
+}
+
+for(i=0; i< lines.length; i++) {
+
+  l = lines[i];
+  console.log(l);
+}
 
 // parseSrtFromFile(srtPath)
 // .then((srts) => {
