@@ -17,9 +17,8 @@ class SrtParser {
    // console.log('constructor this: ' + JSON.stringify(this));
   }
 
- 
-  doParse() {
-    
+ //callback([]); 第一个参数是数组，第二个参数是错误信息
+  doParse(callback) {
     this.lines = new Array();
     this.lineReader = readline.createInterface({
         input: fs.createReadStream(this.path) //直接读取文件流，有可能会遇到编码问题，所以input要为解码后的字符
@@ -32,6 +31,9 @@ class SrtParser {
     });
     this.lineReader.on('close', () => {
       this.pushLine();
+      if(callback) {
+          callback(this.lines);
+      }
     });
   }
 
@@ -89,7 +91,7 @@ class SrtParser {
     var tLine = this.srtLine;
     if(tLine){
       this.lines.push(tLine);
-      console.log('push '+ JSON.stringify(tLine));
+     // console.log('push '+ JSON.stringify(tLine));
     }
   }
 
