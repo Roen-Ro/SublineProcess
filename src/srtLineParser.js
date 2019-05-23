@@ -11,23 +11,16 @@ class SrtParser {
 
   constructor(path) {
     this.path = path;
-    this.lines = new Array();
     this.lastLineType = 'b';
     this.currentLineType = 'b';//b=blank,i=index,t=time,c=content,n=unknown
     this.srtLine = null;
-    console.log('constructor this: ' + JSON.stringify(this));
+   // console.log('constructor this: ' + JSON.stringify(this));
   }
 
-  pushLine() {
-    var tLine = this.srtLine;
-    if(tLine){
-      this.lines.push(tLine);
-      console.log('push '+ JSON.stringify(tLine));
-    }
-  }
-
+ 
   doParse() {
     
+    this.lines = new Array();
     this.lineReader = readline.createInterface({
         input: fs.createReadStream(this.path) //直接读取文件流，有可能会遇到编码问题，所以input要为解码后的字符
       });
@@ -67,11 +60,11 @@ class SrtParser {
       var times = line.split(' --> ');
       if(times.length == 2) {
         this.currentLineType = 't';
-        var start = parseSrtTime(times[0]);
-        var end = parseSrtTime(times[1]);
-        if(start != null && end != null) {
-          this.srtLine.startSec = start;
-          this.srtLine.endSec = end;
+        var s = parseSrtTime(times[0]);//开始时间
+        var e = parseSrtTime(times[1]);//结束时间
+        if(s != null && e != null) {
+          this.srtLine.start = s;
+          this.srtLine.end = e;
         }
         else
         this.currentLineType = 'n';
@@ -90,6 +83,14 @@ class SrtParser {
     }
   
     this.lastLineType = this.currentLineType;
+  }
+
+  pushLine() {
+    var tLine = this.srtLine;
+    if(tLine){
+      this.lines.push(tLine);
+      console.log('push '+ JSON.stringify(tLine));
+    }
   }
 
 }
