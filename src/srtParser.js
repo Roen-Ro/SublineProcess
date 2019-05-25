@@ -3,6 +3,7 @@
 /**
  * Module dependencies.
  */
+//https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String JS字符处理
 
 var fs = require('fs');
 var readline = require('readline');
@@ -97,55 +98,76 @@ class SrtParser {
   }
 
   //解析srt中的时间标签，格式 00:00:23,265 时分秒+毫秒
-static parseSrtTime (timeStr) {
+  static parseSrtTime (timeStr) {
 
-  var eles = timeStr.split(',');
-  var secValue = null;
-  if(eles.length == 2) {
-    var t = eles[0]; //时分秒
-    var tEles = t.split(':').reverse();
-    if(tEles.length > 1) {
-      var l = Math.min(tEles.length,3);
-      for (var i=0; i<l; i++) {
-        if(i == 0)
-          secValue = parseInt(tEles[i]);
-        else if(i == 1)
-          secValue += parseInt(tEles[i])*60;
-        else if(i == 2)
-          secValue += parseInt(tEles[i])*3600;
+    var eles = timeStr.split(',');
+    var secValue = null;
+    if(eles.length == 2) {
+      var t = eles[0]; //时分秒
+      var tEles = t.split(':').reverse();
+      if(tEles.length > 1) {
+        var l = Math.min(tEles.length,3);
+        for (var i=0; i<l; i++) {
+          if(i == 0)
+            secValue = parseInt(tEles[i]);
+          else if(i == 1)
+            secValue += parseInt(tEles[i])*60;
+          else if(i == 2)
+            secValue += parseInt(tEles[i])*3600;
+        }
+        var msec = parseFloat(eles[1]); //毫秒
+        secValue += msec/1000;
       }
-      var msec = parseFloat(eles[1]); //毫秒
-      secValue += msec/1000;
     }
+    return secValue;
   }
-  return secValue;
-}
-
-static formartTimeValue(t) {
-  var sec = parseInt(t);
-  var h = parseInt(sec/3600);
-  var m = parseInt((sec - h*3600)/60);
-  var s = parseInt(sec%60);
-  var ms = (t*1000)%1000;
-  return printf('%02d:%02d:%02d,%03d',h,m,s,ms);
-}
-
-static formartTime(start, end) {
-  var s = SrtParser.formartTimeValue(start);
-  var e = SrtParser.formartTimeValue(end);
-  return s + ' --> ' + e;
-} 
 
 }
 
+ function parseSrtFromFile(path) {
 
+  return new Promise( (resolve, reject) => {
+    var parser = new SrtParser(path);
+      parser.doParse((lines) => {
+        if(lines.length > 0) {
+          console.log('parsed '+lines.length+' lines from ' + path);
+          resolve(lines);
+        }
+        else{
+          console.error('failed parse srt from ' + path);
+          reject({message:'no lrc data'});
+        }
+
+      });
+  });
+}
+
+
+  function formartTimeValue(t) {
+    var sec = parseInt(t);
+    var h = parseInt(sec/3600);
+    var m = parseInt((sec - h*3600)/60);
+    var s = parseInt(sec%60);
+    var ms = (t*1000)%1000;
+    return printf('%02d:%02d:%02d,%03d',h,m,s,ms);
+  }
+  
+  function formartTime(start, end) {
+    var s = formartTimeValue(start);
+    var e = formartTimeValue(end);
+    return s + ' --> ' + e;
+  } 
 
 /*
 {
+  idx:1
   start:10.022,
   end:12.21,
   content:'this is the content'
 }
 */
 
-module.exports = SrtParser;
+//module.exports = SrtParser;
+module.exports.parseSrtFromFile = parseSrtFromFile;
+module.exports.formartTimeValue = formartTimeValue;
+module.exports.formartTime = formartTime;
