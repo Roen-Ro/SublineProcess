@@ -35,13 +35,23 @@ var dir = '/Users/lolaage/Desktop/MyProj/SublineProcess/res/InTheHeartOfTheSun/'
 var orgSrtPath = dir + 'ChineseSimplified-test.srt';//
 var srtPath1 = dir + 'English-test.srt';//
 var srtPath2 = dir + 'Korean-test.srt';
+var mergedSrtPath = dir + 'merged.srt';
 
-async function parseAllSrtLines() {
+async function doParseAndMerge() {
 
   let orgLines = await parseSrtFromFile(orgSrtPath);
   let subLines1 = await parseSrtFromFile(srtPath1);
   let subLines2 = await parseSrtFromFile(srtPath2);
 
+  mergeSrtLine(orgLines,subLines1);
+  mergeSrtLine(orgLines,subLines2);
+
+  putSrtLinesToFile(orgLines,mergedSrtPath,(error, data) => {
+    if(error)
+      console.error(error.message);
+    else
+      console.log('finished write data to file '+mergedSrtPath);
+  });
   // mergeLrcLines(mergeInfo,'zh');
 }
 
@@ -55,41 +65,68 @@ linesMergeFrom: 合并的字幕来源
   content:'this is the content'
 }
 */
+let fixMark = '[fix]'
 function mergeSrtLine(linesMergeTo,linesMergeFrom) {
 
-  let tolerance = 0.2;
+  let tolerance = 0.3;
   let tmpSrc = linesMergeFrom;
+  let lastMatchIndex = 0; //上一次匹配的“合并来源”字幕索引
   for(var i=0; i<linesMergeTo.length; i++) {
     let ln1 = linesMergeTo[i];
 
-    for(var j=0; j<tmpSrc.length; j++) {
+    for(var j=lastMatchIndex; j<tmpSrc.length; j++) {
       let ln2 = tmpSrc[j];
-      
+      let toAddContent;
       if(Math.abs(ln2.start-ln1.start) < tolerance ) {
 
         let deltaT = ln2.end-ln1.end;
+        toAddContent = ln2.content;
 
-        //完美结合
-        if(Math.abs(deltaT) < tolerance) {
-          
-          ln1.content = ln1.content + '/n' + ln2.content;
-          tmpSrc.splice(i,1);
-          break;
+        if(deltaT > tolerance) { //需要手动调整标记
+          toAddContent += fixMark;
         }
-        else if(deltaT > 0) { //被合并字幕的时间更长
+        else  if(deltaT < -tolerance) { //被合并字幕的那一句时间更短, 要检查是不是应该多句合并到一句
 
-        }
-        else if(deltaT < 0) { //被合并字幕的那一句时间更短
-
+          //读取下一句的结束时间，如此循环往复
+          let m = j+1;
+          for(;m < tmpSrc.length; m++) {
+            let ln3 = tmpSrc[m];
+            if(ln3.end - ln1.end < tolerance) {
+              toAddContent += ' ' + ln3.content;
+              j++;
+            }
+            else
+              break;
+          }
+          toAddContent += fixMark;
         }
       }
 
+      if(toAddContent)
+        ln1.content += '\n' + toAddContent;
     }
   }
 
 }
 
-parseAllSrtLines();
+//OK 
+function formartSrtFromLines(srtLines) {
+  let finalText = '';
+  for(var i=0,j=1; i<srtLines.length; i++,j++) {
+    var line = srtLines[i];
+    var str = j+ '\n' + srtParser.formartTime(line.start,line.end) + '\n' + line.content + '\n\n';
+    finalText += str;
+  }
+
+  return finalText;
+}
+
+function putSrtLinesToFile(srtLines,destPath, callBack) {
+
+  fs.writeFile(destPath,formartSrtFromLines(srtLines),callBack);
+}
+
+doParseAndMerge();
 
 // parseSrtFromFile(srtPath)
 // .then((srts) => {

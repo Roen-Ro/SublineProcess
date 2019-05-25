@@ -6,6 +6,7 @@
 
 var fs = require('fs');
 var readline = require('readline');
+const printf = require('printf')
 
 class SrtParser {
 
@@ -62,8 +63,8 @@ class SrtParser {
       var times = line.split(' --> ');
       if(times.length == 2) {
         this.currentLineType = 't';
-        var s = parseSrtTime(times[0]);//开始时间
-        var e = parseSrtTime(times[1]);//结束时间
+        var s = SrtParser.parseSrtTime(times[0]);//开始时间
+        var e = SrtParser.parseSrtTime(times[1]);//结束时间
         if(s != null && e != null) {
           this.srtLine.start = s;
           this.srtLine.end = e;
@@ -81,7 +82,7 @@ class SrtParser {
       this.srtLine.content = line;
     }
     else if(this.lastLineType == 'c') {
-      this.srtLine.content = this.srtLine.content + ' ' + line;
+      this.srtLine.content += ' ' + line;
     }
   
     this.lastLineType = this.currentLineType;
@@ -91,36 +92,53 @@ class SrtParser {
     var tLine = this.srtLine;
     if(tLine && tLine.content) {
       this.lines.push(tLine);
-      console.log('push '+ JSON.stringify(tLine));
+     // console.log('push '+ JSON.stringify(tLine));
     }
   }
 
-}
+  //解析srt中的时间标签，格式 00:00:23,265 时分秒+毫秒
+static parseSrtTime (timeStr) {
 
-//解析srt中的时间标签，格式 00:00:23,265 时分秒+毫秒
-function parseSrtTime (timeStr) {
-
-    var eles = timeStr.split(',');
-    var secValue = null;
-    if(eles.length == 2) {
-      var t = eles[0]; //时分秒
-      var tEles = t.split(':').reverse();
-      if(tEles.length > 1) {
-        var l = Math.min(tEles.length,3);
-        for (var i=0; i<l; i++) {
-          if(i == 0)
-            secValue = parseInt(tEles[i]);
-          else if(i == 1)
-            secValue += parseInt(tEles[i])*60;
-          else if(i == 2)
-            secValue += parseInt(tEles[i])*3600;
-        }
-        var msec = parseFloat(eles[1]); //毫秒
-        secValue += msec/1000;
+  var eles = timeStr.split(',');
+  var secValue = null;
+  if(eles.length == 2) {
+    var t = eles[0]; //时分秒
+    var tEles = t.split(':').reverse();
+    if(tEles.length > 1) {
+      var l = Math.min(tEles.length,3);
+      for (var i=0; i<l; i++) {
+        if(i == 0)
+          secValue = parseInt(tEles[i]);
+        else if(i == 1)
+          secValue += parseInt(tEles[i])*60;
+        else if(i == 2)
+          secValue += parseInt(tEles[i])*3600;
       }
+      var msec = parseFloat(eles[1]); //毫秒
+      secValue += msec/1000;
     }
-    return secValue;
+  }
+  return secValue;
 }
+
+static formartTimeValue(t) {
+  var sec = parseInt(t);
+  var h = parseInt(sec/3600);
+  var m = parseInt((sec - h*3600)/60);
+  var s = parseInt(sec%60);
+  var ms = (t*1000)%1000;
+  return printf('%02d:%02d:%02d,%03d',h,m,s,ms);
+}
+
+static formartTime(start, end) {
+  var s = SrtParser.formartTimeValue(start);
+  var e = SrtParser.formartTimeValue(end);
+  return s + ' --> ' + e;
+} 
+
+}
+
+
 
 /*
 {
