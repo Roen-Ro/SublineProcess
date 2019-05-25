@@ -23,7 +23,7 @@ toMergeLan: linesMergeFrom中字幕语言
 let fixMark = '[fix]'
 function mergeSrtLines(linesMergeTo,linesMergeFrom,orgLan,toMergeLan) {
 
-  let tolerance = 0.3;
+  let tolerance = 0.4;
   let tmpSrc = linesMergeFrom;
   let lastMatchIndex = 0; //上一次被合并到的索引，父字幕的索引
 
@@ -39,10 +39,10 @@ function mergeSrtLines(linesMergeTo,linesMergeFrom,orgLan,toMergeLan) {
   let maxTimeLapIndex = -1;
   for(var j=0; j<tmpSrc.length; j++) { //Loop A
 
-    let ln2 = tmpSrc[j];
+    let srcLine = tmpSrc[j];
     if(toMergePrefix) {
-      if(!ln2.content.startsWith(toMergePrefix))
-        ln2.content = toMergePrefix+ln2.content;
+      if(!srcLine.content.startsWith(toMergePrefix))
+        srcLine.content = toMergePrefix+srcLine.content;
     }
 
     maxTimeLap = 0;
@@ -50,14 +50,14 @@ function mergeSrtLines(linesMergeTo,linesMergeFrom,orgLan,toMergeLan) {
     mergeToIndex = -1;
 
     for(var i=lastMatchIndex; i<linesMergeTo.length; i++) { //Loop B
-      let ln1 = linesMergeTo[i];
+      let tgtLine = linesMergeTo[i];
       if(orgPrefix) {
-        if(!ln1.content.startsWith(orgPrefix))
-          ln1.content = orgPrefix+ln1.content;
+        if(!tgtLine.content.startsWith(orgPrefix))
+        tgtLine.content = orgPrefix+tgtLine.content;
       }
 
-      let startDeltaT = ln2.start-ln1.start;
-      let endDeltaT = ln2.end-ln1.end; 
+      let startDeltaT = srcLine.start - tgtLine.start;
+      let endDeltaT = srcLine.end - tgtLine.end; 
       if( (Math.abs(startDeltaT) < tolerance && Math.abs(endDeltaT) < tolerance)
         ||  (startDeltaT >= 0 && endDeltaT <= 0) ) { // if A (完美匹配)
 
@@ -69,16 +69,20 @@ function mergeSrtLines(linesMergeTo,linesMergeFrom,orgLan,toMergeLan) {
         //合并到重叠时间最长的那句字幕
 
         //计算重叠时间
-        var timeLap = Math.min(ln1.end,ln2.end) - Math.max(ln1.start,ln2.start);
+        var timeLap = Math.min(tgtLine.end,srcLine.end) - Math.max(tgtLine.start,srcLine.start);
 
         if(timeLap > maxTimeLap) {
           maxTimeLap = timeLap;
           maxTimeLapIndex = i;
+         // console.log('mx:'+timeLap);
+        }
+        else {
+         // console.log('--: '+timeLap);
         }
 
         // 确定一个重叠时间最大
 
-        if(ln1.end < ln2.start)
+        if(tgtLine.start > srcLine.end)
           break;
 
       }//esle A
@@ -94,9 +98,9 @@ function mergeSrtLines(linesMergeTo,linesMergeFrom,orgLan,toMergeLan) {
 
     if(mergeToIndex >= 0) {
       let targetLine = linesMergeTo[mergeToIndex];
-      targetLine.content += '\n' + ln2.content;
+      targetLine.content += '\n' + srcLine.content;
       if(mark)
-      targetLine.content += fixMark;
+        targetLine.content += fixMark;
       
       lastMatchIndex = mergeToIndex;
     }
@@ -216,6 +220,8 @@ async function mergeWithMergeFile(mergeJsonFilePath,callBack) {
     delete lanKeys[key];
     var keys = Object.keys(lanKeys);
 
+    //test
+  //  keys = ['en'];
     for(var i=0; i<keys.length; i++) {
       var key2 = keys[i];
       fname = mergeInfo[key2];
