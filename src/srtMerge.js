@@ -9,8 +9,8 @@ var srtParser = require('./srtParser.js');
 var basicUtil = require('./basicUtil.js');
 var path = require('path');
 /*
-linesMergeTo: 要合并到的字幕
-linesMergeFrom: 被合并的字幕
+linesMergeTo: 要合并到的字幕，称它为父字幕
+linesMergeFrom: 被合并的字幕，称它为子字幕
 orgLan: linesMergeTo中字幕语言
 toMergeLan: linesMergeFrom中字幕语言
 //srt字幕对象结构
@@ -25,7 +25,7 @@ function mergeSrtLines(linesMergeTo,linesMergeFrom,orgLan,toMergeLan) {
 
   let tolerance = 0.3;
   let tmpSrc = linesMergeFrom;
-  let lastMatchIndex = 0; //上一次匹配的“合并来源”字幕索引
+  let lastMatchIndex = 0; //上一次被合并到的索引，父字幕的索引
 
   let orgPrefix;
   if(orgLan)
@@ -34,6 +34,77 @@ function mergeSrtLines(linesMergeTo,linesMergeFrom,orgLan,toMergeLan) {
   if(toMergeLan)
     toMergePrefix = '['+toMergeLan+':]';
 
+  let mergeToIndex;
+  let maxTimeLap = 0;
+  let maxTimeLapIndex = -1;
+  for(var j=0; j<tmpSrc.length; j++) { //Loop A
+
+    let ln2 = tmpSrc[j];
+    if(toMergePrefix) {
+      if(!ln2.content.startsWith(toMergePrefix))
+        ln2.content = toMergePrefix+ln2.content;
+    }
+
+    maxTimeLap = 0;
+    maxTimeLapIndex = -1;
+    mergeToIndex = -1;
+
+    for(var i=lastMatchIndex; i<linesMergeTo.length; i++) { //Loop B
+      let ln1 = linesMergeTo[i];
+      if(orgPrefix) {
+        if(!ln1.content.startsWith(orgPrefix))
+          ln1.content = orgPrefix+ln1.content;
+      }
+
+      let startDeltaT = ln2.start-ln1.start;
+      let endDeltaT = ln2.end-ln1.end; 
+      if( (Math.abs(startDeltaT) < tolerance && Math.abs(endDeltaT) < tolerance)
+        ||  (startDeltaT >= 0 && endDeltaT <= 0) ) { // if A (完美匹配)
+
+        mergeToIndex = i;
+        break;
+      } // if A
+      else  { //else A
+
+        //合并到重叠时间最长的那句字幕
+
+        //计算重叠时间
+        var timeLap = Math.min(ln1.end,ln2.end) - Math.max(ln1.start,ln2.start);
+
+        if(timeLap > maxTimeLap) {
+          maxTimeLap = timeLap;
+          maxTimeLapIndex = i;
+        }
+
+        // 确定一个重叠时间最大
+
+        if(ln1.end < ln2.start)
+          break;
+
+      }//esle A
+
+    } //Loop B
+
+    let mark = false;
+    if(mergeToIndex < 0 && maxTimeLapIndex >= 0) {
+      mergeToIndex = maxTimeLapIndex;
+      mark = true;
+    }
+      
+
+    if(mergeToIndex >= 0) {
+      let targetLine = linesMergeTo[mergeToIndex];
+      targetLine.content += '\n' + ln2.content;
+      if(mark)
+      targetLine.content += fixMark;
+      
+      lastMatchIndex = mergeToIndex;
+    }
+      
+
+  } //Loop A 
+
+  /*
   for(var i=0; i<linesMergeTo.length; i++) {
     let ln1 = linesMergeTo[i];
     if(orgPrefix) {
@@ -90,6 +161,18 @@ function mergeSrtLines(linesMergeTo,linesMergeFrom,orgLan,toMergeLan) {
     } //for2
 
   }// for 1
+*/
+}
+
+/*
+  t1 ------------ t2
+      T1 ---------------- T2
+*/
+function lapValueOver(t1,t2,T1,T2) {
+
+  var min = Math.min(t1,T1);
+  var max = Math.max(t2,T2);
+  var lenSum = max - min;
 
 }
 
