@@ -19,6 +19,7 @@ toMergeLan: linesMergeFrom中字幕语言
   end:12.21,
   content:'this is the content'
 }
+返回:没有被合并的字幕数组
 */
 let fixMark = '[fix]'
 function mergeSrtLines(linesMergeTo,linesMergeFrom,orgLan,toMergeLan) {
@@ -27,23 +28,20 @@ function mergeSrtLines(linesMergeTo,linesMergeFrom,orgLan,toMergeLan) {
   let tmpSrc = linesMergeFrom;
   let lastMatchIndex = 0; //上一次被合并到的索引，父字幕的索引
 
-  let orgPrefix;
+  let orgPrefix; //不要赋值
   if(orgLan)
     orgPrefix = '['+orgLan+':]';
-  let toMergePrefix;
+  let toMergePrefix = ''; //赋默认值
   if(toMergeLan)
     toMergePrefix = '['+toMergeLan+':]';
 
+  let unMergedLines = new Array();
   let mergeToIndex;
   let maxTimeLap = 0;
   let maxTimeLapIndex = -1;
   for(var j=0; j<tmpSrc.length; j++) { //Loop A
 
     let srcLine = tmpSrc[j];
-    if(toMergePrefix) {
-      if(!srcLine.content.startsWith(toMergePrefix))
-        srcLine.content = toMergePrefix+srcLine.content;
-    }
 
     maxTimeLap = 0;
     maxTimeLapIndex = -1;
@@ -53,7 +51,7 @@ function mergeSrtLines(linesMergeTo,linesMergeFrom,orgLan,toMergeLan) {
       let tgtLine = linesMergeTo[i];
       if(orgPrefix) {
         if(!tgtLine.content.startsWith(orgPrefix))
-        tgtLine.content = orgPrefix+tgtLine.content;
+          tgtLine.content = orgPrefix+tgtLine.content;
       }
 
       let startDeltaT = srcLine.start - tgtLine.start;
@@ -71,7 +69,7 @@ function mergeSrtLines(linesMergeTo,linesMergeFrom,orgLan,toMergeLan) {
         //计算重叠时间
         var timeLap = Math.min(tgtLine.end,srcLine.end) - Math.max(tgtLine.start,srcLine.start);
 
-        if(timeLap > maxTimeLap) {
+        if(timeLap > 0 && timeLap > maxTimeLap) {
           maxTimeLap = timeLap;
           maxTimeLapIndex = i;
          // console.log('mx:'+timeLap);
@@ -87,7 +85,7 @@ function mergeSrtLines(linesMergeTo,linesMergeFrom,orgLan,toMergeLan) {
 
       }//esle A
 
-    } //Loop B
+    } //Loop B for(var i=lastMatchIndex; i<linesMergeTo.length; i++)
 
     let mark = false;
     if(mergeToIndex < 0 && maxTimeLapIndex >= 0) {
@@ -95,108 +93,36 @@ function mergeSrtLines(linesMergeTo,linesMergeFrom,orgLan,toMergeLan) {
       mark = true;
     }
       
-
     if(mergeToIndex >= 0) {
       let targetLine = linesMergeTo[mergeToIndex];
-      targetLine.content += '\n' + srcLine.content;
+      if(targetLine.merged)
+        targetLine.content += ' ' + srcLine.content;
+      else {
+          targetLine.content += '\n' + toMergePrefix + srcLine.content;
+      }
+      
       if(mark)
         targetLine.content += fixMark;
+
+      targetLine.merged = true;
       
       lastMatchIndex = mergeToIndex;
     }
-      
-
-  } //Loop A 
-
-  /*
-  for(var i=0; i<linesMergeTo.length; i++) {
-    let ln1 = linesMergeTo[i];
-    if(orgPrefix) {
-      if(!ln1.content.startsWith(orgPrefix))
-        ln1.content = orgPrefix+ln1.content;
+    else {
+      //没有找到匹配的合适
+      unMergedLines.push(srcLine);
     }
+      
+  } //Loop A  for(var j=0; j<tmpSrc.length; j++)
 
-    for(var j=lastMatchIndex; j<tmpSrc.length; j++) {
-      let ln2 = tmpSrc[j];
-      let toAddContent;
-
-      if(toMergePrefix) {
-        if(!ln2.content.startsWith(toMergePrefix))
-          ln2.content = toMergePrefix+ln2.content;
-      }
-
-      let startDeltaT = ln2.start-ln1.start;
-      let endDeltaT = ln2.end-ln1.end;
-
-      if(Math.abs(startDeltaT) < tolerance 
-      || Math.abs(endDeltaT) < tolerance ) {
-        
-        toAddContent = ln2.content;
-
-        if(endDeltaT > tolerance) { //需要手动调整标记
-          toAddContent += fixMark;
-        }
-        else  if(endDeltaT < -tolerance) { //被合并字幕的那一句时间更短, 要检查是不是应该多句合并到一句
-
-          //读取下一句的结束时间，如此循环往复
-          let m = j+1;
-          for(;m < tmpSrc.length; m++) {
-            let ln3 = tmpSrc[m];
-            if(ln3.end - ln1.end < tolerance) {
-              toAddContent += ' ' + ln3.content;
-              j++;
-              console.log('MERGE:'+ln3.content);
-            }
-            else
-              break;
-          } // for 3
-          toAddContent += fixMark;
-        }
-      }
-      // else if(Math.abs(endDeltaT) < tolerance ) {
-
-      // }
-
-      if(toAddContent)
-        ln1.content += '\n' + toAddContent;
-      else {
-
-      }
-    } //for2
-
-  }// for 1
-*/
-}
-
-/*
-  t1 ------------ t2
-      T1 ---------------- T2
-*/
-function lapValueOver(t1,t2,T1,T2) {
-
-  var min = Math.min(t1,T1);
-  var max = Math.max(t2,T2);
-  var lenSum = max - min;
-
-}
-
-//OK 
-function formartSrtFromLines(srtLines) {
-  let finalText = '';
-  for(var i=0,j=1; i<srtLines.length; i++,j++) {
-    var line = srtLines[i];
-    var str = j+ '\n' + srtParser.formartTime(line.start,line.end) + '\n' + line.content + '\n\n';
-    finalText += str;
+  //clear .merged flag 
+  for(var x = 0; x<linesMergeTo.length; x++){
+    let l = linesMergeTo[x];
+    l.merged = false;
   }
 
-  return finalText;
+  return unMergedLines;
 }
-
-function putSrtLinesToFile(srtLines,destPath, callBack) {
-
-  fs.writeFile(destPath,formartSrtFromLines(srtLines),callBack);
-}
-
 
 /*
 读取merge.json文件
@@ -220,8 +146,6 @@ async function mergeWithMergeFile(mergeJsonFilePath,callBack) {
     delete lanKeys[key];
     var keys = Object.keys(lanKeys);
 
-    //test
-  //  keys = ['en'];
     for(var i=0; i<keys.length; i++) {
       var key2 = keys[i];
       fname = mergeInfo[key2];
@@ -230,7 +154,14 @@ async function mergeWithMergeFile(mergeJsonFilePath,callBack) {
 
       _pth = path.resolve(mergeJsonFilePath, '../'+fname);
       let lines =  await srtParser.parseSrtFromFile(_pth);
-      mergeSrtLines(orgLines,lines,key,key2);
+      let unmergedLines = mergeSrtLines(orgLines,lines,key,key2);
+
+      console.log(unmergedLines.length + ' Lines not merged for '+fname);
+      //将没有被合并的字幕输出到unmerged-xxxxx.srt文件
+      if(unmergedLines && unmergedLines.length > 0) { 
+        let _pt1 = path.resolve(mergeJsonFilePath, '../unmerged-'+fname);
+        putSrtLinesToFile(unmergedLines,_pt1,()=>{});
+      }
     }
 
     fname = mergeInfo['output'];
@@ -246,6 +177,25 @@ async function mergeWithMergeFile(mergeJsonFilePath,callBack) {
     })
   
 }
+
+
+//OK 
+function formartSrtFromLines(srtLines) {
+  let finalText = '';
+  for(var i=0,j=1; i<srtLines.length; i++,j++) {
+    var line = srtLines[i];
+    var str = j+ '\n' + srtParser.formartTime(line.start,line.end) + '\n' + line.content + '\n\n';
+    finalText += str;
+  }
+
+  return finalText;
+}
+
+function putSrtLinesToFile(srtLines,destPath, callBack) {
+
+  fs.writeFile(destPath,formartSrtFromLines(srtLines),callBack);
+}
+
 
 module.exports.mergeSrtLines = mergeSrtLines;
 module.exports.putSrtLinesToFile = putSrtLinesToFile;
