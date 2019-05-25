@@ -89,9 +89,9 @@ class SrtParser {
 
   pushLine() {
     var tLine = this.srtLine;
-    if(tLine){
+    if(tLine && tLine.content) {
       this.lines.push(tLine);
-     // console.log('push '+ JSON.stringify(tLine));
+      console.log('push '+ JSON.stringify(tLine));
     }
   }
 
@@ -121,5 +121,13 @@ function parseSrtTime (timeStr) {
     }
     return secValue;
 }
+
+/*
+{
+  start:10.022,
+  end:12.21,
+  content:'this is the content'
+}
+*/
 
 module.exports = SrtParser;
