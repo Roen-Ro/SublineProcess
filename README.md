@@ -1,12 +1,12 @@
 # SublineProcess
 Parse and merge srt files.
 
-## Usage
 ### 文件编码
+#### 支持的编码
 目前本工具只能处理`utf-8`字符文件，所以在转换前需要将所有文件转换成utf8格式.   
 如何进行文件转码参考<https://segmentfault.com/a/1190000007073776?_ea=1252426>
 
-#### 编码转换
+#### 转换成`utf-8`
 
 ##### 使用`enca`转换
  安装`enca`
@@ -31,9 +31,36 @@ $ enca -x utf-8 *
   $ iconv -f UTF-16 -t utf-8  Youth-zh.srt > Youth-zh-utf8.srt
   ```
     >`fromcode`表示原文件编码,`tocode`表示目标编码, `file1`表示原文件，`file2`表示输出目标文件
-
+### 源码打包
+`nodejs`打包的工具参考[这里](https://blog.csdn.net/weixin_33975951/article/details/86787858)。
+这里使用`pkg`工具对我们项目进行打包:
+- 下载源码
+- 检查你的电脑是否安装了nodejs引擎(怎么安装网上搜索)
+- 检查你的电脑是否安装了pkg(网上搜索)
+- 切换到`src`目录
+  ```
+  $ cd xxxx/SublineProcess⁩/src
+  ```
+- 安装依赖，在`src`目录下执行
+  ```
+  $ npm install
+  或者
+  $ cnpm install
+  ```
+- 执行`pkg`命令
+     ```
+  $ pkg .
+  ```
+打包完成了,在`src`目录下可以看到新增了三个文件
+```
+subline-process-linux
+subline-process-macos
+subline-process-win.exe
+```
+找到你要用的对应平台文件，把文件名改成`subline-process`
 ### 使用
- - Have nodejs engine installed on your computer [reference](https://www.runoob.com/nodejs/nodejs-install-setup.html).
+程序员可以自己下载代码打包，当然工程目录中有现成的打包好的可执行文件
+- 在项目`build`目录下，找到你需要的可执行文件`subline-process`,把它拷贝到你想要的目录下
 - Put all `.srt` files that you wish to be merged in to the same folder.
 - Create a `json` file named `merge.json` in the same folder along with the srt files with content like:
 ```json
@@ -53,7 +80,10 @@ $ enca -x utf-8 *
 }
 ```
 > in this merge.json file, the keys are the short writting of different languanges, and the values are the corresponding srt file names, except that the `origin` key's value presents the original language, and `output` key's value specifies the final merged out put file name.
-- input in terminal like
+- 切换到`subline-process`所在目录，然后在终端输入
   ```
-  node srtprocess /Users/myname/mydoc/merge.json
+  $ ./subline-process /Users/myname/mydoc/merge.json
   ```
+    >把后面的`/Users/myname/mydoc/merge.json`替换成你自己的merge.json文件路径
+
+字幕合并完成！

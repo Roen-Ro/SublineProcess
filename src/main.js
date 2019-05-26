@@ -17,7 +17,7 @@ var path = require('path');
 
 console.log('inputed parameters are: '+ inputPara);
 
-var mergeJsonFilePath = '/Users/jiangwenbin/Documents/听力资源/华语字幕/芳华/merge.json';//inputPara[2];//
+var mergeJsonFilePath = inputPara[2];
 if(!mergeJsonFilePath)
     mergeJsonFilePath = path.resolve(__dirname, '../res/InTheHeartOfTheSun/merge.json');
 
