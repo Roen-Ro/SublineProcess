@@ -8,6 +8,7 @@
 var fs = require('fs');
 var readline = require('readline');
 const printf = require('printf')
+const iconv = require('iconv-lite');
 
 class SrtParser {
 
@@ -21,6 +22,7 @@ class SrtParser {
 
  //callback([]); 第一个参数是数组，第二个参数是错误信息
   doParse(callback) {
+
     this.lines = new Array();
     this.lineReader = readline.createInterface({
         input: fs.createReadStream(this.path) //直接读取文件流，有可能会遇到编码问题，所以input要为解码后的字符
@@ -42,7 +44,7 @@ class SrtParser {
   //读取完一行数据事件
   lineEventHandler(line) {
   
-   // console.log('this: ' + JSON.stringify(this));
+   // console.log(line);
     let len = line.trim().length;
     if(len == 0){
       this.currentLineType = 'b';
@@ -57,7 +59,7 @@ class SrtParser {
         this.currentLineType = 'i';
       }
       else
-      this.currentLineType = 'n';
+        this.currentLineType = 'n';
     }
     else if(this.lastLineType == 'i') {
       //(\d{2}:\d{2}:\d{2},\d{3}) --> (\d{2}:\d{2}:\d{2},\d{3})
@@ -71,7 +73,7 @@ class SrtParser {
           this.srtLine.end = e;
         }
         else
-        this.currentLineType = 'n';
+          this.currentLineType = 'n';
       }
       else
         this.currentLineType = 'n';

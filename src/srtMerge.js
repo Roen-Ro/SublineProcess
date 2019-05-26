@@ -140,7 +140,7 @@ async function mergeWithMergeFile(mergeJsonFilePath,callBack) {
     var fname = mergeInfo[key];
     var _pth = path.resolve(mergeJsonFilePath, '../'+fname);
     let orgLines =  await srtParser.parseSrtFromFile(_pth);
-    var lanKeys = mergeInfo;
+    var lanKeys = {...mergeInfo};//只适应于对象只有一层
     delete lanKeys["origin"];
     delete lanKeys["output"];
     delete lanKeys[key];

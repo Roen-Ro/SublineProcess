@@ -16,9 +16,8 @@ var srtMerge = require('./srtMerge.js');
 var path = require('path');
 
 console.log('inputed parameters are: '+ inputPara);
-var dir = '/Users/lolaage/Desktop/MyProj/SublineProcess/res/InTheHeartOfTheSun/';//'/Users/jiangwenbin/Desktop/GitHubOpenSources/SublineProcess/res/InTheHeartOfTheSun/';
 
-var mergeJsonFilePath = inputPara[2];
+var mergeJsonFilePath = '/Users/jiangwenbin/Documents/听力资源/华语字幕/芳华/merge.json';//inputPara[2];//
 if(!mergeJsonFilePath)
     mergeJsonFilePath = path.resolve(__dirname, '../res/InTheHeartOfTheSun/merge.json');
 
