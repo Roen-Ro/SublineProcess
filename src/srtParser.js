@@ -82,10 +82,11 @@ class SrtParser {
     else if(this.lastLineType == 't') {
      // console.log(`${line}`);
       this.currentLineType = 'c';
-      this.srtLine.content = line;
+      var c = removeXmlTags(line);
+      this.srtLine.content = c;
     }
     else if(this.lastLineType == 'c') {
-      this.srtLine.content += ' ' + line;
+      this.srtLine.content += ' ' + removeXmlTags(line);
     }
   
     this.lastLineType = this.currentLineType;
@@ -124,41 +125,68 @@ class SrtParser {
     return secValue;
   }
 
-}
+} //SrtParser End
 
- function parseSrtFromFile(path) {
+function removeXmlTags(str) {
 
-  return new Promise( (resolve, reject) => {
-    var parser = new SrtParser(path);
-      parser.doParse((lines) => {
-        if(lines.length > 0) {
-          console.log('parsed '+lines.length+' lines from ' + path);
-          resolve(lines);
-        }
-        else{
-          console.error('failed parse srt from ' + path);
-          reject({message:'no lrc data'});
-        }
+  let sIdx = -1;
+  let eIdx = -1;
+  let tmpStr = str;
 
-      });
-  });
-}
+  while(1) {
 
+    sIdx = tmpStr.indexOf('<');
+    eIdx = tmpStr.indexOf('>');
+    let len = tmpStr.length;
+    if(sIdx >= 0 && eIdx >= 0 && eIdx > sIdx) {
+      var tmsStr1 = '';
+      if(sIdx > 0)
+        tmsStr1 = tmpStr.substring(0,sIdx);
 
-  function formartTimeValue(t) {
-    var sec = parseInt(t);
-    var h = parseInt(sec/3600);
-    var m = parseInt((sec - h*3600)/60);
-    var s = parseInt(sec%60);
-    var ms = (t*1000)%1000;
-    return printf('%02d:%02d:%02d,%03d',h,m,s,ms);
+      if(eIdx < len-1)
+        tmsStr1 += tmpStr.substring(eIdx+1,len);
+
+      tmpStr = tmsStr1;
+    }
+    else
+      break;
   }
-  
-  function formartTime(start, end) {
-    var s = formartTimeValue(start);
-    var e = formartTimeValue(end);
-    return s + ' --> ' + e;
-  } 
+  return tmpStr;
+}
+
+function parseSrtFromFile(path) {
+
+return new Promise( (resolve, reject) => {
+  var parser = new SrtParser(path);
+    parser.doParse((lines) => {
+      if(lines.length > 0) {
+        console.log('parsed '+lines.length+' lines from ' + path);
+        resolve(lines);
+      }
+      else{
+        console.error('failed parse srt from ' + path);
+        reject({message:'no lrc data'});
+      }
+
+    });
+});
+}
+
+
+function formartTimeValue(t) {
+  var sec = parseInt(t);
+  var h = parseInt(sec/3600);
+  var m = parseInt((sec - h*3600)/60);
+  var s = parseInt(sec%60);
+  var ms = (t*1000)%1000;
+  return printf('%02d:%02d:%02d,%03d',h,m,s,ms);
+}
+
+function formartTime(start, end) {
+  var s = formartTimeValue(start);
+  var e = formartTimeValue(end);
+  return s + ' --> ' + e;
+} 
 
 /*
 {
