@@ -6,6 +6,10 @@ Parse and merge srt files.
 - 下载源码
 - 检查你的电脑是否安装了nodejs引擎(怎么安装网上搜索)
 - 检查你的电脑是否安装了pkg(网上搜索)
+```
+//执行安装 pkg
+$ cnpm install pkg -g
+```
 - 切换到`src`目录
   ```
   $ cd xxxx/SublineProcess⁩/src

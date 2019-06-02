@@ -1,10 +1,17 @@
 {
   "name": "subline-process",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
-  "bin":"main.js",
+  "bin":"./main.js",
   "scripts": {
     "start": "node ./main.js"
+  },
+  "pkg": {
+    "targets": [
+      "node8-win-x64",
+      "node8-macos-x64",
+      "node8-linux-x64"
+    ]
   },
   "dependencies": {
     "printf": "^0.5.1",
