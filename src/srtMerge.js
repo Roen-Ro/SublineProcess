@@ -133,17 +133,17 @@ async function mergeWithMergeFile(mergeJsonFilePath,callBack) {
     var mergeInfo = await basicUtil.objectFromJsonFile(mergeJsonFilePath);
 
    // console.log(JSON.stringify(mergeInfo));
-    let key = mergeInfo['origin'];
-    if(!key) {
+    let orgKey = mergeInfo['origin'];
+    if(!orgKey) {
       return console.error('no origin key or value was specified in the merge.json file');
     }
-    var fname = mergeInfo[key];
+    var fname = mergeInfo[orgKey];
     var _pth = path.resolve(mergeJsonFilePath, '../'+fname);
     let orgLines =  await srtParser.parseSrtFromFile(_pth);
     var lanKeys = {...mergeInfo};//只适应于对象只有一层
     delete lanKeys["origin"];
     delete lanKeys["output"];
-    delete lanKeys[key];
+    delete lanKeys[orgKey];
     var keys = Object.keys(lanKeys);
 
     for(var i=0; i<keys.length; i++) {
@@ -154,13 +154,13 @@ async function mergeWithMergeFile(mergeJsonFilePath,callBack) {
 
       _pth = path.resolve(mergeJsonFilePath, '../'+fname);
       let lines =  await srtParser.parseSrtFromFile(_pth);
-      let unmergedLines = mergeSrtLines(orgLines,lines,key,key2);
+      let unmergedLines = mergeSrtLines(orgLines,lines,orgKey,key2);
 
       console.log(unmergedLines.length + ' Lines not merged for '+fname);
       //将没有被合并的字幕输出到unmerged-xxxxx.srt文件
       if(unmergedLines && unmergedLines.length > 0) { 
         let _pt1 = path.resolve(mergeJsonFilePath, '../unmerged-'+fname);
-        putSrtLinesToFile(unmergedLines,_pt1,()=>{});
+        putSrtLinesToFile(unmergedLines,_pt1,null,()=>{});
       }
     }
 
@@ -169,7 +169,7 @@ async function mergeWithMergeFile(mergeJsonFilePath,callBack) {
       fname = 'merged.srt';
     _pth = path.resolve(mergeJsonFilePath, '../'+fname);
 
-    putSrtLinesToFile(orgLines,_pth,(error,data) => {
+    putSrtLinesToFile(orgLines,_pth,orgKey,(error,data) => {
       if(error)
         console.error('Failed write merged srt to file '+_pth);
       else
@@ -180,8 +180,11 @@ async function mergeWithMergeFile(mergeJsonFilePath,callBack) {
 
 
 //OK 
-function formartSrtFromLines(srtLines) {
+function formartSrtFromLines(srtLines,originLanguage) {
   let finalText = '';
+  if(originLanguage)
+    finalText += 'origin:'+originLanguage+'\n\n';
+
   for(var i=0,j=1; i<srtLines.length; i++,j++) {
     var line = srtLines[i];
     var str = j+ '\n' + srtParser.formartTime(line.start,line.end) + '\n' + line.content + '\n\n';
@@ -191,9 +194,9 @@ function formartSrtFromLines(srtLines) {
   return finalText;
 }
 
-function putSrtLinesToFile(srtLines,destPath, callBack) {
+function putSrtLinesToFile(srtLines,destPath, orgLan, callBack) {
 
-  fs.writeFile(destPath,formartSrtFromLines(srtLines),callBack);
+  fs.writeFile(destPath,formartSrtFromLines(srtLines,orgLan),callBack);
 }
 
 
