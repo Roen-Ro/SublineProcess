@@ -4,13 +4,12 @@
     // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        
-
         {
             "type": "node",
             "request": "launch",
             "name": "Srt Merger",
-            "program": "${workspaceFolder}/main.js"
+            "program": "${workspaceFolder}/main.js",
+            "args": ["-cleantags", "./", "-o","../cleaned.srt"],
         }
     ]
 }
