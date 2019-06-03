@@ -11,9 +11,18 @@ process.env.NODE_ENV = 'development';//部署的时候设置成 production
 var inputPara = process.argv;//输入的参数 数组，注意参数是从第3个元素开始的（index为2），第一个元素为node执行器目录地址，第二个为js执行文件地址
 
 var fs = require('fs');
+var basUtil = require('./basicUtil.js');
 var srtParser = require('./srtParser.js');
 var srtMerge = require('./srtMerge.js');
 var path = require('path');
+
+//test
+var s = '<xy>xxxxx<i>-<>ooooooo{font axa sdd }9099{AAAAA}CCCCC';
+console.log(s);
+s = s.stringtrimmedwithtags('<','>');
+console.log(s);
+s = s.stringtrimmedwithtags('{','}');
+console.log(s);
 
 console.log('inputed parameters are: '+ inputPara);
 

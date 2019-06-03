@@ -23,4 +23,31 @@ function objectFromJsonFile(jsionFilePath) {
   });
 }
 
+String.prototype.stringtrimmedwithtags = function (beginTag,endTag) {
+
+  let sIdx = -1;
+  let eIdx = -1;
+  let tmpStr = this.toString();
+
+  while(1) {
+
+    sIdx = tmpStr.indexOf(beginTag);
+    eIdx = tmpStr.indexOf(endTag);
+    let len = tmpStr.length;
+    if(sIdx >= 0 && eIdx >= 0 && eIdx > sIdx) {
+      var tmsStr1 = '';
+      if(sIdx > 0)
+        tmsStr1 = tmpStr.substring(0,sIdx);
+
+      if(eIdx < len-1)
+        tmsStr1 += tmpStr.substring(eIdx+1,len);
+
+      tmpStr = tmsStr1;
+    }
+    else
+      break;
+  }
+  return tmpStr;
+}
+
 exports.objectFromJsonFile = objectFromJsonFile;

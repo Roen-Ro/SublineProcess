@@ -6,6 +6,7 @@
 //https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String JS字符处理
 
 var fs = require('fs');
+var basUtil = require('./basicUtil.js');
 var readline = require('readline');
 const printf = require('printf')
 const iconv = require('iconv-lite');
@@ -129,28 +130,8 @@ class SrtParser {
 
 function removeXmlTags(str) {
 
-  let sIdx = -1;
-  let eIdx = -1;
-  let tmpStr = str;
-
-  while(1) {
-
-    sIdx = tmpStr.indexOf('<');
-    eIdx = tmpStr.indexOf('>');
-    let len = tmpStr.length;
-    if(sIdx >= 0 && eIdx >= 0 && eIdx > sIdx) {
-      var tmsStr1 = '';
-      if(sIdx > 0)
-        tmsStr1 = tmpStr.substring(0,sIdx);
-
-      if(eIdx < len-1)
-        tmsStr1 += tmpStr.substring(eIdx+1,len);
-
-      tmpStr = tmsStr1;
-    }
-    else
-      break;
-  }
+  let tmpStr = str.stringtrimmedwithtags('<','>');
+  tmpStr = tmpStr.stringtrimmedwithtags('{','}');
   return tmpStr;
 }
 
