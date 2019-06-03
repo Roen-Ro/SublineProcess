@@ -16,13 +16,6 @@ var srtParser = require('./srtParser.js');
 var srtMerge = require('./srtMerge.js');
 var path = require('path');
 
-//test
-var s = '<xy>xxxxx<i>-<>ooooooo{font axa sdd }9099{AAAAA}CCCCC';
-console.log(s);
-s = s.stringtrimmedwithtags('<','>');
-console.log(s);
-s = s.stringtrimmedwithtags('{','}');
-console.log(s);
 
 console.log('inputed parameters are: '+ inputPara);
 
