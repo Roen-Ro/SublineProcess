@@ -140,6 +140,7 @@ async function mergeWithMergeFile(mergeJsonFilePath,callBack) {
     var fname = mergeInfo[orgKey];
     var _pth = path.resolve(mergeJsonFilePath, '../'+fname);
     let orgLines =  await srtParser.parseSrtFromFile(_pth);
+    combineLineContentsIntoOne(orgLines); //处理换行
     var lanKeys = {...mergeInfo};//只适应于对象只有一层
     delete lanKeys["origin"];
     delete lanKeys["output"];
@@ -154,6 +155,7 @@ async function mergeWithMergeFile(mergeJsonFilePath,callBack) {
 
       _pth = path.resolve(mergeJsonFilePath, '../'+fname);
       let lines =  await srtParser.parseSrtFromFile(_pth);
+      combineLineContentsIntoOne(lines); //处理换行
       let unmergedLines = mergeSrtLines(orgLines,lines,orgKey,key2);
 
       console.log(unmergedLines.length + ' Lines not merged for '+fname);
@@ -176,6 +178,15 @@ async function mergeWithMergeFile(mergeJsonFilePath,callBack) {
         console.log('Merge finished! new merge file is: '+_pth);
     })
   
+}
+
+//将srt字幕中多行内容合并成一行
+function combineLineContentsIntoOne(srtLines) {
+  var len = srtLines.length;
+  for(var i=0; i<len; i++) {
+    var line = srtLines[i];
+    line.content = line.content.replaceAll('\n',' '); //只能替换掉第一个匹配字符
+  }
 }
 
 

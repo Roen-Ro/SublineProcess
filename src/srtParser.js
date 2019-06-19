@@ -78,7 +78,6 @@ class SrtParser {
       }
       else
         this.currentLineType = 'n';
-  
     }
     else if(this.lastLineType == 't') {
      // console.log(`${line}`);
@@ -87,7 +86,7 @@ class SrtParser {
       this.srtLine.content = c;
     }
     else if(this.lastLineType == 'c') {
-      this.srtLine.content += ' ' + removeXmlTags(line);
+      this.srtLine.content += '\n' + removeXmlTags(line);
     }
   
     this.lastLineType = this.currentLineType;

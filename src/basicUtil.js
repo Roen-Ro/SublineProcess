@@ -50,4 +50,14 @@ String.prototype.stringtrimmedwithtags = function (beginTag,endTag) {
   return tmpStr;
 }
 
+String.prototype.replaceAll= function (a,b) {
+  let tmpStr = this.toString();
+  let eles = tmpStr.split(a);
+  let retStr = eles[0];
+  for(var i=1; i<eles.length; i++) {
+    retStr += (b + eles[i]);
+  }
+  return retStr;
+}
+
 exports.objectFromJsonFile = objectFromJsonFile;

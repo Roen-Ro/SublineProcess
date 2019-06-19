@@ -32,7 +32,7 @@ origin:zh
 
 5
 00:00:24,624 --> 00:00:27,616
-[zh:]我几乎从中找不到任何记忆里的东西
+[zh:]我几乎从中 找不到任何记忆里的东西
 [en:]Almost nothing is as I remembered.
 [fre:]Il ne reste presque plus rien comme dans mes souvenirs.
 [ar:]لا شيء تقريباً يبدو كما أذكره[fix]
@@ -59,7 +59,7 @@ origin:zh
 
 8
 00:00:36,636 --> 00:00:39,639
-[zh:]我的故事总是发生在夏天
+[zh:]我的故事总是 发生在夏天
 [en:]My stories always take place in summer.
 [fre:]Mes histoires se passent toujours durant l'été.
 [ar:]قصصي دائما تحدث في الصيف[fix]
