@@ -86,10 +86,37 @@ $ enca -x utf-8 *
 }
 ```
 > in this merge.json file, the keys are the short writting of different languanges, and the values are the corresponding srt file names, except that the `origin` key's value presents the original language, and `output` key's value specifies the final merged out put file name.
-- 切换到`subline-process`所在目录，然后在终端输入
+
+使用：
+ 切换到`subline-process`所在目录，然后在终端输入
   ```
-  $ ./subline-process /Users/myname/mydoc/merge.json
+  $ ./subline-process -merge /Users/myname/mydoc/merge.json
   ```
-    >把后面的`/Users/myname/mydoc/merge.json`替换成你自己的merge.json文件路径
+>把后面的`/Users/myname/mydoc/merge.json`替换成你自己的merge.json文件路径
 
 字幕合并完成！
+
+### 清理样式标签
+清理样式标签用`-cleantags file_path`参数，`cleantags`将会清理掉srt字幕中'<>' 和 '{}'之间的样式内容,举个栗子：
+切换到`subline-process`所在目录，然后在终端输入
+  ```
+  $ ./subline-process -cleantags /Users/myname/mydoc/mysubtitle.srt
+  ```
+>把后面的`/Users/myname/mydoc/mysubtitle.srt`替换成你自己的srt文件路径
+
+被清理的数据将会输出到新生成的文件，文件路径和原文件目录相同，文件名称在原文件名后面加上'_clean', 上面的例子输出文件将会是`/Users/myname/mydoc/mysubtitle_clean.srt`
+
+### 添加时间偏移
+用`-offset file_path second`对srt文件中的所有字幕添加整体时间偏移，
+假如要将mysubtitle.srt文件的所有字幕内容提前2.5秒：
+
+切换到`subline-process`所在目录，然后在终端输入
+  ```
+  $ ./subline-process -offset /Users/myname/mydoc/mysubtitle.srt -2.5
+  ```
+>把后面的`/Users/myname/mydoc/mysubtitle.srt`替换成你自己的srt文件路径
+
+被清理的数据将会输出到新生成的文件，文件路径和原文件目录相同，文件名称在原文件名后面加上'_offset', 上面的例子输出文件将会是`/Users/myname/mydoc/mysubtitle_offset.srt`
+
+### 字幕分割
+To be finished...
