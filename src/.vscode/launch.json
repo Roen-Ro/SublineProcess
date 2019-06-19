@@ -7,9 +7,9 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Srt Merger",
+            "name": "subtitle process",
             "program": "${workspaceFolder}/main.js",
-            "args": ["-cleantags", "./", "-o","../cleaned.srt"],
+            "args": ["-cleantags", "/Users/jiangwenbin/Desktop/merged-tmp.srt"]
         }
     ]
 }
