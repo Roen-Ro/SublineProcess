@@ -45,7 +45,7 @@ else {
     console.log('available commands: ');
     console.log('-cleantags srtpath: clean \'< >\', \'{ }\' tags with output file named xxx_clean.srt');
     console.log('-merge merge.json: merge many srt files into one with specified json file ');
-    console.log('-offset srtpath second: put all srt lines\' time forward or backward in seconds, -1.5 forward 1.5 second; 2.1 backward 1.5 second');
+    console.log('-offset srtpath second: put all srt lines\' time forward or backward in seconds, for example -1.5 forward 1.5 second; 2.1 backward 1.5 second');
 }
 
 
