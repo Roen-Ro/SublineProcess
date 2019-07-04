@@ -11,7 +11,7 @@
             "request": "launch",
             "name": "subtitle process",
             "program": "${workspaceFolder}/main.js",
-            "args": ["-offset", "/Users/jiangwenbin/Desktop/GitHubOpenSources/SublineProcess/res/InTheHeartOfTheSun/ChineseSimplified-TTT.srt", "-0.1"]
+            "args": ["-offset", "/Users/jiangwenbin/Documents/听力资源/英语/TheBucketList/zh.srt", "-2.4"]
         }
     ]
 }

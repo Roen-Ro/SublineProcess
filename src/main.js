@@ -66,7 +66,7 @@ async function cleanSrtTags(srtpath) {
 async function addSrtTimeOffset(srtpath, second) {
 
     if( isNaN(second)) {
-        console.error('invalid offset time value, it must be a valid float value');
+        console.error('invalid offset time \'' + second +'\', it must be a valid float value');
         return;
     }
 
