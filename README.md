@@ -66,8 +66,9 @@ $ enca -x utf-8 *
 
     中文如果遇到转换失败，那就试试用`GB2312`做参数试试
     >注: 有时候`file`查看到的文件编码，输入到`iconv`命令中，并不能识别，下面列出一些常用到的语言编码，如果遇到转换不了可以使用下面的编码来替换
+    > 1. ISO-8859 子集列表<https://baike.baidu.com/item/ISO-8859/834118?fr=aladdin>
     > 1. 中文 `GB2312`
-    > 1. 法语（或其他西欧语言） `CP850`
+    > 1. 法语（或其他西欧语言） `CP850` 
 
 ### 字幕合并
 程序员可以自己下载代码打包，当然工程目录中有现成的打包好的可执行文件
@@ -111,7 +112,8 @@ $ enca -x utf-8 *
 
 被清理的数据将会输出到新生成的文件，文件路径和原文件目录相同，文件名称在原文件名后面加上'_clean', 上面的例子输出文件将会是`/Users/myname/mydoc/mysubtitle_clean.srt`
 
-### 添加时间偏移
+### 调整时间
+#### 设置偏移 `-offset`
 用`-offset file_path second`对srt文件中的所有字幕添加整体时间偏移，
 假如要将mysubtitle.srt文件的所有字幕内容提前2.5秒：
 
@@ -122,6 +124,24 @@ $ enca -x utf-8 *
 >把后面的`/Users/myname/mydoc/mysubtitle.srt`替换成你自己的srt文件路径
 
 被清理的数据将会输出到新生成的文件，文件路径和原文件目录相同，文件名称在原文件名后面加上'_offset', 上面的例子输出文件将会是`/Users/myname/mydoc/mysubtitle_offset.srt`
+
+#### 设置开始时间
+##### -setallstart
+使用`-setallstart directory second`对directory目录下所有的srt字幕设置统一的开始时间，这样第一句字幕的开始时间自动设定为second时间，后续字幕时间按照时间偏移自动设置。
+举个栗子，要设置`mySrt`目录下的所有字幕的开始时间，都设置为00:00:02,500，
+首先切换到`subline-process`所在目录，然后在终端输入
+  ```
+  $ ./subline-process -setallstart /Users/myname/mySrt 2.5
+  ```
+
+##### -setstart
+使用`-setstart file.srt second`设置file.srt字幕开始时间为second时间，后续字幕时间按照时间偏移自动设置。
+
+举个栗子，要设置`xxx.srt`的开始时间为00:00:02,500，
+首先切换到`subline-process`所在目录，然后在终端输入
+  ```
+  $ ./subline-process -setstart /Users/myname/mySrt/xxx.srt 2.5
+  ```
 
 ### 字幕分割
 To be finished...
