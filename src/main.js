@@ -55,6 +55,10 @@ else if(cmd == '-setallstart') {
 
     setStartTimeInDir(dir,start);
 }
+else if(cmd == '-splittime') {
+    let _pth = inputPara[3];
+    splitSrtLines(_pth, inputPara.slice(4));
+}
 // else if(cmd == '-addlan') {
     
 // }
@@ -65,6 +69,7 @@ else {
     console.log('-offset srtpath second: put all srt lines\' time forward or backward in seconds, for example -1.5 forward 1.5 second; 2.1 backward 1.5 second');
     console.log('-setstart srtpath second: set srt files\' start time to second, all lines\' time will be adjusted automatically');
     console.log('-setallstart srtDirectory second: set all srt files\' start time in srtDirectory to second, all lines\' time will be adjusted automatically');
+    console.log('-splittime path times[](time must in hh:mm:ss.dd format): to split srt file by input times');
 }
 
 
@@ -165,6 +170,19 @@ async function addSrtStartTime(srtpath, second) {
                 console.log('finished set start time with ' + second + ' second for output file '+ destPath);
         });
      }
+}
 
+async function splitSrtLines(srtPath, times) {
 
+    // times.forEach((t) => {
+
+    //     console.log('t is: ' + t);
+    // });
+
+    let len = times.length;
+    for(var i=0; i<len; i++) {
+        var t = times[i];
+
+    }
+    console.log('This command 正在开发中....');
 }

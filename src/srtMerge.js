@@ -147,6 +147,10 @@ async function mergeWithMergeFile(mergeJsonFilePath,callBack) {
     delete lanKeys[orgKey];
     var keys = Object.keys(lanKeys);
 
+    let head = null;
+    if(orgKey)
+      head = 'origin:' + orgKey;
+
     for(var i=0; i<keys.length; i++) {
       var key2 = keys[i];
       fname = mergeInfo[key2];
@@ -171,7 +175,7 @@ async function mergeWithMergeFile(mergeJsonFilePath,callBack) {
       fname = 'merged.srt';
     _pth = path.resolve(mergeJsonFilePath, '../'+fname);
 
-    putSrtLinesToFile(orgLines,_pth,orgKey,(error,data) => {
+    putSrtLinesToFile(orgLines,_pth,head,(error,data) => {
       if(error)
         console.error('Failed write merged srt to file '+_pth);
       else
@@ -191,10 +195,10 @@ function combineLineContentsIntoOne(srtLines) {
 
 
 //OK 
-function formartSrtFromLines(srtLines,originLanguage) {
+function formartSrtFromLines(srtLines, header) {
   let finalText = '';
-  if(originLanguage)
-    finalText += 'origin:'+originLanguage+'\n\n';
+  if(header)
+    finalText += header;//'origin:'+originLanguage+'\n\n';
 
   for(var i=0,j=1; i<srtLines.length; i++,j++) {
     var line = srtLines[i];
@@ -205,9 +209,9 @@ function formartSrtFromLines(srtLines,originLanguage) {
   return finalText;
 }
 
-function putSrtLinesToFile(srtLines,destPath, orgLan, callBack) {
+function putSrtLinesToFile(srtLines,destPath, header, callBack) {
 
-  fs.writeFile(destPath,formartSrtFromLines(srtLines,orgLan),callBack);
+  fs.writeFile(destPath,formartSrtFromLines(srtLines,header),callBack);
 }
 
 
