@@ -3,6 +3,7 @@
     // 悬停以查看现有属性的描述。
     // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
 
+    //"args": ["-splittime", "/Users/jiangwenbin/Desktop/srt_debug/en_thebucketlist.srt", "00:00:37,000","00:00:57,400","00:02:03,000"]
 
     "version": "0.2.0",
     "configurations": [
@@ -11,7 +12,7 @@
             "request": "launch",
             "name": "subtitle process",
             "program": "${workspaceFolder}/main.js",
-            "args": ["-splittime", "/Users/jiangwenbin/Desktop/srt_debug/TheBucketListLow.srt", "00:00:37,000","00:00:57,400","00:02:03,000"]
+            "args": ["-splittime", "/Users/jiangwenbin/Desktop/srt_debug/en_thebucketlist.srt", "00:00:20,000","00:00:37,000","00:00:42,000","00:07:29,000","01:12:25,00"]
         }
     ]
 }

@@ -192,19 +192,20 @@ async function splitSrtLines(srtPath, times) {
             t1 = lines[l_len-1].end + 1;
         }
             
-
         console.log(i+': split: '+ t0 + '->'+t1);
 
         for(; j < l_len; j++) {
             line_ = lines[j];
-            line_.start -= t0;
-            line_.end -= t0;
             if(line_.start >= t1) {
-                groups[i] = lines.slice(preIdx, j-preIdx);
+                let a_len = j-preIdx;
+                let sub_lines = lines.slice(preIdx, j);
+                groups[i] = sub_lines;
+                console.log('finished group:'+i+' preIdx:'+preIdx+' j=' + j + ' len:' + a_len);
                 preIdx = j;
-                console.log('finished group:'+i);
                 break;
             }
+            line_.start -= t0;
+            line_.end -= t0;
         }
         t0 = t1;
     }
@@ -214,7 +215,7 @@ async function splitSrtLines(srtPath, times) {
     groups.forEach((a, idx) => {
 
         let fname = path.basename(srtPath,'.srt');
-        let destPath = path.resolve(srtPath,'../'+fname+'_'+(idx+1)+'.srt');
+        let destPath = path.resolve(srtPath,'../'+fname+'_'+idx+'.srt');
 
         srtMerge.putSrtLinesToFile(a,destPath,null,(error) => {
             if(error)
