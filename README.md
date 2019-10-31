@@ -145,3 +145,7 @@ $ enca -x utf-8 *
 
 ### 字幕分割
 To be finished...
+
+
+### 添加语言
+To be finished...

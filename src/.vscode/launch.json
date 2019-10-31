@@ -11,7 +11,7 @@
             "request": "launch",
             "name": "subtitle process",
             "program": "${workspaceFolder}/main.js",
-            "args": ["-setstart", "/Users/jiangwenbin/Documents/听力资源/英语/TheBucketList/zh.srt", "27.666"]
+            "args": ["-splittime", "/Users/jiangwenbin/Documents/听力资源/英语/TheBucketList/zh.srt", "00:21:21","00:31:51","00:44:00","00:66:66"]
         }
     ]
 }
