@@ -77,9 +77,10 @@ async function cleanSrtTags(srtpath) {
 
     var fname = path.basename(srtpath,'.srt');
     var destPath = path.resolve(srtpath,'../'+fname+'_clean.srt');
-    let lines =  await srtParser.parseSrtFromFile(srtpath);
+    let parseResult =  await srtParser.parseSrtFromFile(srtpath);
+    let lines = parseResult.lines;
 
-    srtMerge.putSrtLinesToFile(lines,destPath,null,(error) => {
+    srtMerge.putSrtLinesToFile(lines,destPath,parseResult.heads,(error) => {
         if(error)
             console.log('error:' + error);
         else
@@ -98,7 +99,8 @@ async function addSrtTimeOffset(srtpath, second) {
 
     let fname = path.basename(srtpath,'.srt');
     let destPath = path.resolve(srtpath,'../'+fname+'_offset.srt');
-    let lines =  await srtParser.parseSrtFromFile(srtpath);
+    let parseResult =  await srtParser.parseSrtFromFile(srtpath);
+    let lines = parseResult.lines;
 
     let len = lines.length;
     for(var i=0; i<len; i++) {
@@ -107,7 +109,7 @@ async function addSrtTimeOffset(srtpath, second) {
         line.end += sec;
     }
 
-    srtMerge.putSrtLinesToFile(lines,destPath,null,(error) => {
+    srtMerge.putSrtLinesToFile(lines,destPath,parseResult.heads,(error) => {
         if(error)
             console.log('error:' + error);
         else
@@ -147,7 +149,8 @@ async function addSrtStartTime(srtpath, second) {
 
     let fname = path.basename(srtpath,'.srt');
     let destPath = path.resolve(srtpath,'../'+fname+'_start_'+start+'.srt');
-    let lines =  await srtParser.parseSrtFromFile(srtpath);
+    let parseResult =  await srtParser.parseSrtFromFile(srtpath);
+    let lines = parseResult.lines;
 
     let offset = start - lines[0].start;
     if(offset < 0.001 && offset > -0.01)
@@ -163,7 +166,7 @@ async function addSrtStartTime(srtpath, second) {
             line.end += offset;
         }
     
-        srtMerge.putSrtLinesToFile(lines,destPath,null,(error) => {
+        srtMerge.putSrtLinesToFile(lines,destPath,parseResult.heads,(error) => {
             if(error)
                 console.log('error:' + error);
             else
@@ -172,9 +175,10 @@ async function addSrtStartTime(srtpath, second) {
      }
 }
 
-async function splitSrtLines(srtPath, times) {
+async function splitSrtLines(srtpath, times) {
 
-    let lines =  await srtParser.parseSrtFromFile(srtPath);
+    let parseResult =  await srtParser.parseSrtFromFile(srtpath);
+    let lines = parseResult.lines;
 
     let t_len = times.length;
     let l_len = lines.length;
@@ -214,10 +218,10 @@ async function splitSrtLines(srtPath, times) {
 
     groups.forEach((a, idx) => {
 
-        let fname = path.basename(srtPath,'.srt');
-        let destPath = path.resolve(srtPath,'../'+fname+'_'+idx+'.srt');
+        let fname = path.basename(srtpath,'.srt');
+        let destPath = path.resolve(srtpath,'../'+fname+'_'+idx+'.srt');
 
-        srtMerge.putSrtLinesToFile(a,destPath,null,(error) => {
+        srtMerge.putSrtLinesToFile(a,destPath,parseResult.heads,(error) => {
             if(error)
                 console.log('error:' + error);
             else
