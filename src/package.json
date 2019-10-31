@@ -2,7 +2,7 @@
   "name": "subline-process",
   "version": "1.0.1",
   "private": true,
-  "bin":"./main.js",
+  "bin": "./main.js",
   "scripts": {
     "start": "node ./main.js"
   },

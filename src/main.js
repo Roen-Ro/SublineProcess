@@ -174,15 +174,54 @@ async function addSrtStartTime(srtpath, second) {
 
 async function splitSrtLines(srtPath, times) {
 
-    // times.forEach((t) => {
+    let lines =  await srtParser.parseSrtFromFile(srtPath);
 
-    //     console.log('t is: ' + t);
-    // });
+    let t_len = times.length;
+    let l_len = lines.length;
+    let t0 = 0, t1 = 0;
+    let preIdx = 0;
+    let j = 0;
+    let line_ = {};
+    let groups = [];
 
-    let len = times.length;
-    for(var i=0; i<len; i++) {
-        var t = times[i];
+    for(var i=0; i <= t_len; i++) {
 
+        if(i<t_len)
+            t1 = srtParser.parseSrtTime(times[i]);
+        else {
+            t1 = lines[l_len-1].end + 1;
+        }
+            
+
+        console.log(i+': split: '+ t0 + '->'+t1);
+
+        for(; j < l_len; j++) {
+            line_ = lines[j];
+            line_.start -= t0;
+            line_.end -= t0;
+            if(line_.start >= t1) {
+                groups[i] = lines.slice(preIdx, j-preIdx);
+                preIdx = j;
+                console.log('finished group:'+i);
+                break;
+            }
+        }
+        t0 = t1;
     }
-    console.log('This command 正在开发中....');
+
+    groups[t_len] = lines.slice(preIdx);
+
+    groups.forEach((a, idx) => {
+
+        let fname = path.basename(srtPath,'.srt');
+        let destPath = path.resolve(srtPath,'../'+fname+'_'+(idx+1)+'.srt');
+
+        srtMerge.putSrtLinesToFile(a,destPath,null,(error) => {
+            if(error)
+                console.log('error:' + error);
+            else
+                console.log('Finished split line to path: ' + destPath);
+        });
+    });
+
 }

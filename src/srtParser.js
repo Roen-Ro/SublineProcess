@@ -11,6 +11,32 @@ var readline = require('readline');
 const printf = require('printf')
 const iconv = require('iconv-lite');
 
+
+  //解析srt中的时间标签，格式 00:00:23,265 时分秒+毫秒
+  function parseSrtTime (timeStr) {
+
+    var eles = timeStr.split(',');
+    var secValue = null;
+    if(eles.length == 2) {
+      var t = eles[0]; //时分秒
+      var tEles = t.split(':').reverse();
+      if(tEles.length > 1) {
+        var l = Math.min(tEles.length,3);
+        for (var i=0; i<l; i++) {
+          if(i == 0)
+            secValue = parseInt(tEles[i]);
+          else if(i == 1)
+            secValue += parseInt(tEles[i])*60;
+          else if(i == 2)
+            secValue += parseInt(tEles[i])*3600;
+        }
+        var msec = parseFloat(eles[1]); //毫秒
+        secValue += msec/1000;
+      }
+    }
+    return secValue;
+  }
+
 class SrtParser {
 
   constructor(path) {
@@ -67,8 +93,8 @@ class SrtParser {
       var times = line.split(' --> ');
       if(times.length == 2) {
         this.currentLineType = 't';
-        var s = SrtParser.parseSrtTime(times[0]);//开始时间
-        var e = SrtParser.parseSrtTime(times[1]);//结束时间
+        var s = parseSrtTime(times[0]);//开始时间
+        var e = parseSrtTime(times[1]);//结束时间
         if(s != null && e != null) {
           this.srtLine.start = s;
           this.srtLine.end = e;
@@ -98,31 +124,6 @@ class SrtParser {
       this.lines.push(tLine);
      // console.log('push '+ JSON.stringify(tLine));
     }
-  }
-
-  //解析srt中的时间标签，格式 00:00:23,265 时分秒+毫秒
-  static parseSrtTime (timeStr) {
-
-    var eles = timeStr.split(',');
-    var secValue = null;
-    if(eles.length == 2) {
-      var t = eles[0]; //时分秒
-      var tEles = t.split(':').reverse();
-      if(tEles.length > 1) {
-        var l = Math.min(tEles.length,3);
-        for (var i=0; i<l; i++) {
-          if(i == 0)
-            secValue = parseInt(tEles[i]);
-          else if(i == 1)
-            secValue += parseInt(tEles[i])*60;
-          else if(i == 2)
-            secValue += parseInt(tEles[i])*3600;
-        }
-        var msec = parseFloat(eles[1]); //毫秒
-        secValue += msec/1000;
-      }
-    }
-    return secValue;
   }
 
 } //SrtParser End
@@ -179,5 +180,6 @@ function formartTime(start, end) {
 
 //module.exports = SrtParser;
 module.exports.parseSrtFromFile = parseSrtFromFile;
+module.exports.parseSrtTime = parseSrtTime;
 module.exports.formartTimeValue = formartTimeValue;
 module.exports.formartTime = formartTime;
