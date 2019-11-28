@@ -59,6 +59,11 @@ else if(cmd == '-splittime') {
     let _pth = inputPara[3];
     splitSrtLines(_pth, inputPara.slice(4));
 }
+else if(cmd == '-detectsplitpoint') {
+    let _pth = inputPara[3];
+    let second = inputPara[4];
+    splitTimeDetect(_pth, second);
+}
 // else if(cmd == '-addlan') {
     
 // }
@@ -70,6 +75,7 @@ else {
     console.log('-setstart srtpath second: set srt files\' start time to second, all lines\' time will be adjusted automatically');
     console.log('-setallstart srtDirectory second: set all srt files\' start time in srtDirectory to second, all lines\' time will be adjusted automatically');
     console.log('-splittime path times[](time must in hh:mm:ss.dd format): to split srt file by input times');
+    console.log('-detectsplitpoint path time: to get suggestion split time points, where \'time\' is the minimum interval between the line end time and the next line\'s begin time\n检测适合分割的时间点 \'time\'参数用来设定前一句字幕结束时间和下一句字幕开始时间之间的最小时间间隔');
 }
 
 
@@ -148,7 +154,7 @@ async function addSrtStartTime(srtpath, second) {
     let start = parseFloat(second);
 
     let fname = path.basename(srtpath,'.srt');
-    let destPath = path.resolve(srtpath,'../'+fname+'_start_'+start+'.srt');
+    let destPath = srtpath;//path.resolve(srtpath,'../'+fname+'_start_'+start+'.srt');
     let parseResult =  await srtParser.parseSrtFromFile(srtpath);
     let lines = parseResult.lines;
 
@@ -229,4 +235,26 @@ async function splitSrtLines(srtpath, times) {
         });
     });
 
+}
+
+//检测哪些时间适合分割 检测规则是前一句字幕结束时间和后一句字幕开始时间间隔大于second秒,
+async function  splitTimeDetect(srtpath, second)  {
+
+    if( isNaN(second)) {
+        second = 3;
+    }
+
+    let parseResult =  await srtParser.parseSrtFromFile(srtpath);
+    let lines = parseResult.lines;
+
+    let preEnd = 0;
+    let interval = 0;
+    lines.forEach((l, idx) => {
+        interval = l.start - preEnd;
+        if(interval>= second) {
+            console.log(idx + ': [' + interval + '] ' + srtParser.formartTimeValue(l.start));
+        }
+        preEnd = l.end;
+
+    });
 }

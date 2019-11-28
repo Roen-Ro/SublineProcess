@@ -5,6 +5,9 @@
 
 
 //"args": ["-splittime", "/Users/jiangwenbin/Desktop/srt_debug/en_thebucketlist.srt", "00:00:20,000","00:00:37,000","00:00:42,000","00:07:29,000","01:12:25,00"]
+//"-setallstart", "/Users/jiangwenbin/Documents/听力资源/英语/gone girl", "22.450"
+//"-merge", "/Users/jiangwenbin/Documents/听力资源/英语/gone girl/merge.json"
+//"-detectsplitpoint", "/Users/jiangwenbin/Documents/听力资源/英语/gone girl/gone girl.srt", "8.0"
     "version": "0.2.0",
     "configurations": [
         {
@@ -12,7 +15,7 @@
             "request": "launch",
             "name": "subtitle process",
             "program": "${workspaceFolder}/main.js",
-            "args": ["-setstart", "/Users/lolaage/Desktop/subtitles/ChineseSimplified.srt", "12.0"]
+            "args": ["-detectsplitpoint", "/Users/jiangwenbin/Documents/听力资源/英语/gone girl/gone girl.srt", "8.0"]
         }
     ]
 }

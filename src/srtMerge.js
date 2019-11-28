@@ -201,7 +201,7 @@ function combineLineContentsIntoOne(srtLines) {
 function formartSrtFromLines(srtLines, header) {
   let finalText = '';
   if(header)
-    finalText += header;//'origin:'+originLanguage+'\n\n';
+    finalText += (header + '\n\n');//'origin:'+originLanguage+'\n\n';
 
   for(var i=0,j=1; i<srtLines.length; i++,j++) {
     var line = srtLines[i];

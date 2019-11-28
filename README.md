@@ -39,6 +39,9 @@ subline-process-win.exe
 如何进行文件转码参考<https://segmentfault.com/a/1190000007073776?_ea=1252426>
 
 #### 转换成`utf-8`
+最简单的办法：
+1. 将无法打开或乱码文件，拖动到Chrome浏览器，强大的chrome能够解码目前我遇到的所有编码
+2. 将浏览器显示的文本复制再粘贴到txt文件
 
 ##### 使用`enca`转换
  安装`enca`
@@ -143,12 +146,24 @@ $ enca -x utf-8 *
   $ ./subline-process -setstart /Users/myname/mySrt/xxx.srt 2.5
   ```
 
-### 字幕分割 -splittime
-使用命令`-splittime file.srt t1 t2 t3 t3`将file.srt字幕按照[t1 t2 t3 t3]时间点进行分割,其中时间的格式和srt字幕时间格式一致`时:分:秒,毫秒`
+### 字幕分割 
+#### -detectsplitpoint
+使用命令`-detectsplitpoint file.srt interval` 获取合适的分割时间点, interval为小数或整数的时间间隔
+举例子:
+```
+-detectsplitpoint /Users/myname/mySrt/xxx.srt 8.0
+```
+获取‘xxx.srt’文件中，间隔时间大于等于8秒的字幕时间点
 
+#### -splittime
+使用命令`-splittime file.srt t1 t2 t3 t3`将file.srt字幕按照[t1 t2 t3 t3]时间点进行分割,其中时间的格式和srt字幕时间格式一致`'时:分:秒,毫秒'`
+
+举例子:
 ```
 -splittime /Users/myname/mySrt/xxx.srt 00:00:20,000 00:00:37,000 00:00:42,000 00:07:29,000 01:12:25,00
 ```
+
+
 
 ### 添加语言
 To be finished...
