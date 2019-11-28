@@ -44,6 +44,7 @@ class SrtParser {
     this.lastLineType = 'b';
     this.currentLineType = 'b';//b=blank,i=index,t=time,c=content,n=unknown
     this.srtLine = null;
+    this.heads = '';//头部信息
    // console.log('constructor this: ' + JSON.stringify(this));
   }
 
@@ -63,7 +64,7 @@ class SrtParser {
     this.lineReader.on('close', () => {
       this.pushLine();
       if(callback) {
-          callback(this.lines);
+          callback(this.lines,this.heads);
       }
     });
   }
@@ -114,6 +115,12 @@ class SrtParser {
     else if(this.lastLineType == 'c') {
       this.srtLine.content += '\n' + removeXmlTags(line);
     }
+
+    if((this.currentLineType =='n' || this.currentLineType =='b') 
+    && this.lines.length == 0) 
+    {
+      this.heads +=  (line+'\n');
+    }
   
     this.lastLineType = this.currentLineType;
   }
@@ -139,10 +146,10 @@ function parseSrtFromFile(path) {
 
 return new Promise( (resolve, reject) => {
   var parser = new SrtParser(path);
-    parser.doParse((lines) => {
+    parser.doParse((lines,heads) => {
       if(lines.length > 0) {
         console.log('parsed '+lines.length+' lines from ' + path);
-        resolve(lines);
+        resolve({lines:lines, heads:heads});
       }
       else{
         console.error('failed parse srt from ' + path);
