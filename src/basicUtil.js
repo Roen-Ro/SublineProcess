@@ -60,4 +60,12 @@ String.prototype.replaceAll= function (a,b) {
   return retStr;
 }
 
+String.prototype.containsString = function (a) {
+  let tmpStr = this.toString();
+  let i = tmpStr.indexOf(a);
+  if(i == -1)
+    return false;
+  return true;
+}
+
 exports.objectFromJsonFile = objectFromJsonFile;

@@ -25,7 +25,7 @@ origin:zh
 00:00:20,620 --> 00:00:23,612
 [zh:]20年的功夫她已经成为一个现代化的城市
 [en:]In 20 years, it's become a modern city.
-[fre:]En 20 ans, c'est devenu une ville moderne.
+[fre:]En 20 ans, c'est devenu 
 [ar:]في 20 عام، أصبحت مدينة حديثة[fix]
 [ko:]20년 사이에, 그곳은 현대적 도시가 되버렸다.[fix]
 [ru:]За 20 лет он стал современным городом

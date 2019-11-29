@@ -3,6 +3,13 @@
     // 悬停以查看现有属性的描述。
     // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
 
+ //   电影字幕下载
+//http://subsmax.com/subtitles-movie/ 这个网站对语言筛选更方便   
+//https://yts-subs.com/  
+
+
+// 其他转srt
+// https://convert.jamack.net/zh/ //这个更好
 
 //"args": ["-splittime", "/Users/jiangwenbin/Desktop/srt_debug/en_thebucketlist.srt", "00:00:20,000","00:00:37,000","00:00:42,000","00:07:29,000","01:12:25,00"]
 //"-setallstart", "/Users/jiangwenbin/Documents/听力资源/英语/gone girl", "22.450"
@@ -15,7 +22,7 @@
             "request": "launch",
             "name": "subtitle process",
             "program": "${workspaceFolder}/main.js",
-            "args": ["-detectsplitpoint", "/Users/jiangwenbin/Documents/听力资源/英语/gone girl/gone girl.srt", "8.0"]
+            "args": ["-detectsplitpoint", "/Users/lolaage/Desktop/MyUpload/TheBucketList.srt", "10.0"]
         }
     ]
 }

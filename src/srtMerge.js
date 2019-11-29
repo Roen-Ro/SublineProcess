@@ -50,7 +50,7 @@ function mergeSrtLines(linesMergeTo,linesMergeFrom,orgLan,toMergeLan) {
     for(var i=lastMatchIndex; i<linesMergeTo.length; i++) { //Loop B
       let tgtLine = linesMergeTo[i];
       if(orgPrefix) {
-        if(!tgtLine.content.startsWith(orgPrefix))
+        if(!tgtLine.content.containsString(orgPrefix))
           tgtLine.content = orgPrefix+tgtLine.content;
       }
 

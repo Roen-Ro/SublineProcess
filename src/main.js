@@ -64,13 +64,14 @@ else if(cmd == '-detectsplitpoint') {
     let second = inputPara[4];
     splitTimeDetect(_pth, second);
 }
-// else if(cmd == '-addlan') {
+else if(cmd == '-addlan') {
     
-// }
+}
 else {
     console.log('available commands: ');
     console.log('-cleantags srtpath: clean \'< >\', \'{ }\' tags with output file named xxx_clean.srt');
     console.log('-merge merge.json: merge many srt files into one with specified json file ');
+    console.log('-addlan add.json: 添加翻译字幕，现在直接使用\'-merge\'命令即可 ');
     console.log('-offset srtpath second: put all srt lines\' time forward or backward in seconds, for example -1.5 forward 1.5 second; 2.1 backward 1.5 second');
     console.log('-setstart srtpath second: set srt files\' start time to second, all lines\' time will be adjusted automatically');
     console.log('-setallstart srtDirectory second: set all srt files\' start time in srtDirectory to second, all lines\' time will be adjusted automatically');
