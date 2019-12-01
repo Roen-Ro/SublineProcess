@@ -16,7 +16,8 @@ var srtParser = require('./srtParser.js');
 var srtMerge = require('./srtMerge.js');
 var path = require('path');
 
-console.log('inputed parameters are: '+ inputPara);
+//console.log('inputed parameters are: '+ inputPara);
+console.log('https://github.com/Roen-Ro/SublineProcess');
 
 var cmd = inputPara[2];
 
