@@ -128,7 +128,7 @@ function mergeSrtLines(linesMergeTo,linesMergeFrom,orgLan,toMergeLan) {
 读取merge.json文件
 @para mergeJsonFilePath merge.json文件地址
 */
-async function mergeWithMergeFile(mergeJsonFilePath,callBack) {
+async function mergeWithMergeFile(mergeJsonFilePath, isAddLan, callBack) {
 
     var mergeInfo = await basicUtil.objectFromJsonFile(mergeJsonFilePath);
 
@@ -141,7 +141,8 @@ async function mergeWithMergeFile(mergeJsonFilePath,callBack) {
     var _pth = path.resolve(mergeJsonFilePath, '../'+fname);
     let rslts = await srtParser.parseSrtFromFile(_pth);
     let orgLines =  rslts.lines;
-    combineLineContentsIntoOne(orgLines); //处理换行
+    if(!isAddLan)//如果是添加语言的话，就不处理原始字幕的换行
+      combineLineContentsIntoOne(orgLines); //处理换行
     var lanKeys = {...mergeInfo};//只适应于对象只有一层
     delete lanKeys["origin"];
     delete lanKeys["output"];
