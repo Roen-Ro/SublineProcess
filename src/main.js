@@ -69,11 +69,16 @@ else if(cmd == '-addlan') {
     var jsonPath = inputPara[3];
     srtMerge.mergeWithMergeFile(jsonPath, true);
 }
+else if(cmd == '-combine') {
+    var jsonPath = inputPara[3];
+    combineSrtFile(inputPara[3], inputPara[4], inputPara[5]);
+}
 else {
     console.log('available commands: ');
     console.log('-cleantags srtpath: clean \'< >\', \'{ }\' tags with output file named xxx_clean.srt');
     console.log('-merge merge.json: merge many srt files into one with specified json file ');
-    console.log('-addlan add.json: 添加语言字幕 ');
+    console.log('-combine path1 path2 t2 (time must in hh:mm:ss.dd format): 将两份srt字幕合并成一份');
+    console.log('-addlan add.json: 添加语言字幕 待开发');
     console.log('-offset srtpath second: put all srt lines\' time forward or backward in seconds, for example -1.5 forward 1.5 second; 2.1 backward 1.5 second');
     console.log('-setstart srtpath second: set srt files\' start time to second, all lines\' time will be adjusted automatically');
     console.log('-setallstart srtDirectory second: set all srt files\' start time in srtDirectory to second, all lines\' time will be adjusted automatically');
@@ -162,7 +167,7 @@ async function addSrtStartTime(srtpath, second) {
     let lines = parseResult.lines;
 
     let offset = start - lines[0].start;
-    if(offset < 0.001 && offset > -0.01)
+    if(offset < 0.01 && offset > -0.01)
      {
         console.log('start time at '+srtpath+' is the same as '+start+' no need to reset');
      }
@@ -236,6 +241,50 @@ async function splitSrtLines(srtpath, times) {
             else
                 console.log('Finished split line to path: ' + destPath);
         });
+    });
+
+}
+
+//path1:第一段srt字幕文件  path2：第二段srt字幕文件, start2:第二段srt字幕第一句字幕的开始时间
+async function combineSrtFile(path1, path2, start2) {
+
+    let sec2 = start2;
+    if( isNaN(sec2)) 
+        sec2 = srtParser.parseSrtTime(sec2);
+    
+    if( isNaN(sec2)) {
+        console.log('srt time offset time value is invalid, it must be a float value or in srt time formart');
+        return;
+    }
+    
+    let parseResult1 =  await srtParser.parseSrtFromFile(path1);
+    let lines1 = parseResult1.lines;
+
+    let parseResult2 =  await srtParser.parseSrtFromFile(path2);
+    let lines2 = parseResult2.lines;
+
+    let offset = sec2 - lines2[0].start;
+
+    let len = lines2.length;
+    for(var i=0; i<len; i++) {
+        var line = lines2[i];
+        line.start += offset;
+        line.end += offset;
+    }
+
+    let lines = lines1.concat(lines2);
+
+    let fname1 = path.basename(path1,'.srt');
+    let fname2 = path.basename(path2,'.srt');
+    let destPath = path.resolve(path1,'../'+fname1+'+'+fname2+'.srt');
+
+    let heads = parseResult1.heads +'\n' + parseResult2.heads;
+
+    srtMerge.putSrtLinesToFile(lines,destPath,heads,(error) => {
+        if(error)
+            console.log('error:' + error);
+        else
+            console.log('finished combine srt files to file: '+ destPath);
     });
 
 }

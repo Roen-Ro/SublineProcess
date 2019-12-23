@@ -73,9 +73,13 @@ $ enca -x utf-8 *
     > 1. 中文 `GB2312`
     > 1. 日耳曼语系  `ISO-8859-1`或`CP850`(法语试过)
 
-### 字幕合并
+### 命令工具生成
 程序员可以自己下载代码打包，当然工程目录中有现成的打包好的可执行文件
 - 在项目`build`目录下，找到你需要的可执行文件`subline-process`,把它拷贝到你想要的目录下
+
+### 字幕合并
+
+#### 多语言字幕合并 -merge
 - Put all `.srt` files that you wish to be merged in to the same folder.
 - Create a `json` file named `merge.json` in the same folder along with the srt files with content like:
 ```json
@@ -103,7 +107,15 @@ $ enca -x utf-8 *
   ```
 >把后面的`/Users/myname/mydoc/merge.json`替换成你自己的merge.json文件路径
 
-字幕合并完成！
+多语言字幕合并完成！
+
+#### 多段字幕文件合并 -combine
+`-combine srtpath1 srtpath2 time2` 将两个分段字幕文件合并成一个;   
+举例子:将mysrt_cd1.srt和/mysrt_cd2.srt文件合并成一个，其中mysrt_cd2.srt的首句字幕开始时间设置为 00:15:14,999
+```
+$ ./subline-process -combine /Users/xxoo/srt_debug/mysrt_cd1.srt /Users/xxoo/srt_debug/mysrt_cd2.srt 00:15:14,999
+```
+
 
 ### 清理样式标签
 清理样式标签用`-cleantags file_path`参数，`cleantags`将会清理掉srt字幕中'<>' 和 '{}'之间的样式内容,举个栗子：
