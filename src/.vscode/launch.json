@@ -24,7 +24,7 @@
             "request": "launch",
             "name": "subtitle process",
             "program": "${workspaceFolder}/main.js",
-            "args": ["-combine","/Users/jiangwenbin/Desktop/srt_debug/gone girl_0.srt","/Users/jiangwenbin/Desktop/srt_debug/gone girl_1.srt","00:15:14,999"]
+            "args": ["-setstart","/Users/jiangwenbin/Desktop/srt_debug/en.srt", "0.5"]
         }
     ]
 }

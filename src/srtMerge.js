@@ -206,7 +206,13 @@ function formartSrtFromLines(srtLines, header) {
 
   for(var i=0,j=1; i<srtLines.length; i++,j++) {
     var line = srtLines[i];
-    var str = j+ '\n' + srtParser.formartTime(line.start,line.end) + '\n' + line.content + '\n\n';
+    var str;
+    if(line.isAlignLine)
+      str = j+ '\n' + 'align>\n';
+    else
+      str = j+ '\n';
+
+    str += (srtParser.formartTime(line.start,line.end) + '\n' + line.content + '\n\n');
     finalText += str;
   }
 

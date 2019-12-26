@@ -42,7 +42,7 @@ class SrtParser {
   constructor(path) {
     this.path = path;
     this.lastLineType = 'b';
-    this.currentLineType = 'b';//b=blank,i=index,t=time,c=content,n=unknown
+    this.currentLineType = 'b';//b=blank,i=index,t=time,c=content,n=unknown,a=align
     this.srtLine = null;
     this.heads = '';//头部信息
    // console.log('constructor this: ' + JSON.stringify(this));
@@ -89,7 +89,7 @@ class SrtParser {
       else
         this.currentLineType = 'n';
     }
-    else if(this.lastLineType == 'i') {
+    else if(this.lastLineType == 'i' || this.lastLineType == 'a') {
       //(\d{2}:\d{2}:\d{2},\d{3}) --> (\d{2}:\d{2}:\d{2},\d{3})
       var times = line.split(' --> ');
       if(times.length == 2) {
@@ -103,8 +103,14 @@ class SrtParser {
         else
           this.currentLineType = 'n';
       }
-      else
+      else if(line == 'align>'){
+        this.currentLineType = 'a';
+        this.srtLine.isAlignLine = true;
+      }
+      else {
         this.currentLineType = 'n';
+      }
+        
     }
     else if(this.lastLineType == 't') {
      // console.log(`${line}`);
